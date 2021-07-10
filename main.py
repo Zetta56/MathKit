@@ -2,7 +2,7 @@ from src.triangle import Triangle
 from src.matrix import Matrix
 
 # Sample Usage:
-triangle = Triangle(a=4, b=6, C=30)
+triangle = Triangle(a=4, b=6, B=80)
 triangle.solve()
 triangle.show()
 

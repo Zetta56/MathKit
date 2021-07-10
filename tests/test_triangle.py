@@ -14,11 +14,19 @@ class TriangleTest(unittest.TestCase):
     self.assertAlmostEqual(triangle.angles[0], 93.197, places=2)
     self.assertAlmostEqual(triangle.angles[1], 36.803, places=2)
   
-  def test_ssa(self):
+  # Tests Law of Sines in quadrant 1
+  def test_ssa1(self):
     triangle = Triangle(a=5, b=8, B=40)
     self.assertAlmostEqual(triangle.sides[2], 11.156, places=2)
     self.assertAlmostEqual(triangle.angles[0], 23.687, places=2)
     self.assertAlmostEqual(triangle.angles[2], 116.313, places=2)
+
+  # Tests Law of Sines in quadrant 2
+  def test_ssa2(self):
+    triangle = Triangle(A=50, a=150, c=100)
+    self.assertAlmostEqual(triangle.sides[1], 193.24, places=2)
+    self.assertAlmostEqual(triangle.angles[1], 99.29, places=2)
+    self.assertAlmostEqual(triangle.angles[2], 30.71, places=2)
 
   def test_asa(self):
     triangle = Triangle(A=30, c=8, B=70)
@@ -32,12 +40,28 @@ class TriangleTest(unittest.TestCase):
     self.assertAlmostEqual(triangle.angles[1], 53.13, places=2)
     self.assertAlmostEqual(triangle.angles[2], 90, places=2)
 
-  def test_zero_angle(self):
+  # Ensures custom error triggers instead of default error
+  def test_zero(self):
     triangle = Triangle(a=3, b=4, c=0)
     self.assertEqual(str(triangle), "Triangle could not be made with given information")
 
-  def test_zero_side(self):
-    triangle = Triangle(a=0, b=4, c=50)
-    self.assertEqual(str(triangle), "Triangle could not be made with given information")
+  def test_equilateral(self):
+    triangle = Triangle(a=5, b=5, A=60)
+    self.assertAlmostEqual(triangle.sides[2], 5, places=2)
+    self.assertAlmostEqual(triangle.angles[1], 60, places=2)
+    self.assertAlmostEqual(triangle.angles[2], 60, places=2)
+
+  def test_obtuse_isosceles(self):
+    triangle = Triangle(a=3, b=3, c=5)
+    self.assertAlmostEqual(triangle.angles[0], 33.557, places=2)
+    self.assertAlmostEqual(triangle.angles[1], 33.557, places=2)
+    self.assertAlmostEqual(triangle.angles[2], 112.885, places=2)
+
+  # Ensures longest side/angle check in is_valid works correctly 
+  def test_acute_isosceles(self):
+    triangle = Triangle(a=6, b=6, c=5)
+    self.assertAlmostEqual(triangle.angles[0], 65.376, places=2)
+    self.assertAlmostEqual(triangle.angles[1], 65.376, places=2)
+    self.assertAlmostEqual(triangle.angles[2], 49.249, places=2)
 
 unittest.main()
