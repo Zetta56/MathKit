@@ -18,6 +18,7 @@ class Triangle():
     Law of Sines: x/sinX = y/sinY
     Law of Cosines: x2=y2+z2-2yzcosX
     Angles Sum Theorem: X + Y + Z = 180
+    Pythagorean Theorem: x^2 + y^2 = z^2
     Distance Formula: d = sqrt((x2-x1)^2 + (y2-y1)^2)
   """
 
@@ -210,15 +211,19 @@ class Triangle():
     Draws triangle using matplotlib.
 
     Third Point Proof:
-      Solving for x2 and y2 if s1=leg, s2=leg, x3=hypotenuse
-      (x2-x1)^2 + (y2-y1)^2 = s1^2
-      (x2-x3)^2 + (y2-y3)^2 = s2^2
+      Solving for (x2,y2) if (x1,y1)=point1, (x3,y3)=point3, s1=leg, s2=leg
+      (x2-x1)^2 + (y2-y1)^2 = s1^2     | Pythagorean Theorem
+      (x2-x3)^2 + (y2-y3)^2 = s2^2     | Pythagorean Theorem
       Let x1=0, y1=0, y3=0
+      x2^2 + y2^2 = s1^2               | equation1
+      y2 = sqrt(s1^2 - x^2)            | **Answer for y2
+      (x2-x3)^2 + y2^2 = s2^2          | equation2
+      equation2 - equation1
       s2^2 - s1^2 = (x2-x3)^2 - x2^2
+      s2^2 - s1^2 = x2^2 - 2x2x3 + x3^2 - x2^2
       s2^2 - s1^2 = -2x2x3 + x3^2
-      -2x2x3 = s2^2 - s1^2 - x3^2
-      x2 = (s2^2 - s1^2 - x3^2) / -2x3
-      y2 = sqrt(s1^2 - x^2)
+      s2^2 - s1^2 - x3^2 = -2x2x3
+      x2 = (s2^2 - s1^2 - x3^2) / -2x3 | **Answer for x2
     """
     if not self.is_valid():
       print("Triangle could not be made with given information")

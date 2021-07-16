@@ -64,4 +64,5 @@ class TriangleTest(unittest.TestCase):
     self.assertAlmostEqual(triangle.angles[1], 65.376, places=2)
     self.assertAlmostEqual(triangle.angles[2], 49.249, places=2)
 
-unittest.main()
+if __name__ == '__main__':
+  unittest.main()
