@@ -206,7 +206,7 @@ class Triangle():
       self.area = (1/2 * self.sides[0] * self.sides[1] * math.sin(math.radians(self.angles[2])))
       self.height = 2 * self.area / max(self.sides)
 
-  def show(self):
+  def graph(self):
     """
     Draws triangle using matplotlib.
 

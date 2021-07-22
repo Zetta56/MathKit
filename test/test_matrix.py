@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 from src.matrix import Matrix
 
 class TestMatrix(unittest.TestCase):
@@ -48,6 +49,15 @@ class TestMatrix(unittest.TestCase):
   def test_multiply_right(self):
     matrix = Matrix([[12, 4], [-4, -10], [-6, 12]])
     self.assertEqual((-0.5 * matrix).data, [[-6, -2], [2, 5], [3, -6]])
+
+  # Creates a MagicMock of plt.show(), so that graphs don't pop up during tests
+  @patch("src.matrix.plt.show")
+  def test_graphs(self, mock_show):
+    try:
+      matrix = Matrix([[1, -2], [5, 3]])
+      matrix.graph2D()
+    except:
+      self.fail("An error has occurred while graphing")
 
 if __name__ == '__main__':
   unittest.main()

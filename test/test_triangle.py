@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 from src.triangle import Triangle
 
 class TriangleTest(unittest.TestCase):
@@ -63,6 +64,14 @@ class TriangleTest(unittest.TestCase):
     self.assertAlmostEqual(triangle.angles[0], 65.376, places=2)
     self.assertAlmostEqual(triangle.angles[1], 65.376, places=2)
     self.assertAlmostEqual(triangle.angles[2], 49.249, places=2)
+
+  @patch("src.triangle.plt.show")
+  def test_graph(self, mock_show):
+    try:
+      triangle = Triangle(a=6, b=6, c=5)
+      triangle.graph()
+    except:
+      self.fail("An error has occurred while graphing triangle")
 
 if __name__ == '__main__':
   unittest.main()
