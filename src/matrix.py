@@ -126,11 +126,34 @@ class Matrix:
     if isinstance(other, int) or isinstance(other, float):
       return self.multiply_scalar(other)
 
-  def graph2D(self, scale=None):
-    plt.title("Visual Representation")
-    plt.plot([1, 2, 3], [1, 2, 3])
-    self.init_cartesian(plt, scale)
+  def graph2D(self, vector=None, scale=1):
+    self.init_cartesian2(plt, scale)
+    plt.title("Graphical Representation")
+    # Basis vectors
+    plt.arrow(0, 0, self.data[0][0], self.data[1][0], head_width=(scale/50), color="g", label="Basis i")
+    plt.arrow(0, 0, self.data[0][1], self.data[1][1], head_width=(scale/50), color="b", label="Basis j")
+    # Vector transformation (if provided)
+    if vector is not None:
+      transformed = self * Matrix([[vector[0]], [vector[1]]])
+      plt.arrow(0, 0, vector[0], vector[1], head_width=(scale/50), color="y", label="Pre-transform")
+      plt.arrow(0, 0, transformed.data[0][0], transformed.data[1][0], head_width=(scale/50), color="tab:orange", label="Post-transform")
+      plt.figtext(0.05, 0.8, "Yellow: Pre-transformation")
+      plt.figtext(0.05, 0.75, "Orange: Post-transformation")
+    plt.gca().legend()
     plt.show()
+
+  # def graphBasis(self, column=0, scale=1):
+  #   """
+  #   Graphs the basis vectors of a 1x2 matrix on a 2D plane.
+  #   For larger matrices, you can specify the matrix column to graph.
+  #   """
+  #   if len(self.data) == 2:
+  #     self.init_cartesian2(plt, scale)
+  #     plt.title("Basis Vectors")
+  #     plt.arrow(0, 0, self.data[0][column], 0, lw=3, head_width=(scale/50), color="g")
+  #     plt.arrow(0, 0, 0, self.data[1][column], lw=3, head_width=(scale/50), color="b")
+  #     plt.arrow(0, 0, self.data[0][column], self.data[1][column], lw=3, head_width=(scale/50), color="y")
+  #     plt.show()
 
   def graphBasis(self, column=0, scale=1):
     """
@@ -138,18 +161,16 @@ class Matrix:
     For larger matrices, you can specify the matrix column to graph.
     """
     if len(self.data) == 2:
+      self.init_cartesian3(plt, scale)
       plt.title("Basis Vectors")
-      plt.arrow(0, 0, self.data[0][column], 0, lw=3, head_width=(scale/50), color="g")
-      plt.arrow(0, 0, 0, self.data[1][column], lw=3, head_width=(scale/50), color="b")
-      plt.arrow(0, 0, self.data[0][column], self.data[1][column], lw=3, head_width=(scale/50), color="y")
-      self.init_cartesian(plt, scale)
       plt.show()
 
-  def init_cartesian(self, plt, scale):
-    """Creates a formatted cartesian plane."""
+  def init_cartesian2(self, plt, scale):
+    """Creates a formatted 2D cartesian plane."""
     # Setup
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
     plt.grid(True)
-    ax = plt.gca()
     # Center axes at origin and remove unnecessary ones
     ax.spines.right.set_visible(False)
     ax.spines.top.set_visible(False)
@@ -176,3 +197,32 @@ class Matrix:
     # Labelpad moves labels relative to their normal positions
     ax.set_xlabel('x', labelpad=-30, x=1)
     ax.set_ylabel('y', labelpad=-33, y=0.98, rotation=0)
+
+  def init_cartesian3(self, plt, scale):
+    """Creates a formatted 3D cartesian plane."""
+    # Setup
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1, projection='3d')
+    # Create custom axes centered at origin using lines
+    length = scale * 1.5
+    ax.plot([length, -length], [0, 0], [0, 0], 'k-', linewidth=1)
+    ax.plot([0, 0], [length, -length], [0, 0], 'k-', linewidth=1)
+    ax.plot([0, 0], [0, 0], [length, -length], 'k-', linewidth=1)
+    ax.text(length, 0, 0, 'x', color='r', fontsize=16)
+    ax.text(0, length, 0, 'y', color='g', fontsize=16)
+    ax.text(0, 0, length, 'z', color='b', fontsize=16)
+    # # Set axes limits to scale
+    ax.set_xlim(-scale, scale)
+    ax.set_ylim(-scale, scale)
+    ax.set_zlim(-scale, scale)
+    # print(ax.get_xticklabels()[0])
+    # Hide ticks, axes, and background
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.set_zticks([])
+    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+    ax._axis3don = False
+    # ax.xaxis
+    # ax.quiver(0,0,0,1,1,1)

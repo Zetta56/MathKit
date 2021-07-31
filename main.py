@@ -6,6 +6,6 @@ from src.matrix import Matrix
 # triangle.solve()
 # triangle.graph()
 
-matrix = Matrix([[1, -2], [5, 3]])
-# matrix.graph2D(16)
-matrix.graphBasis(column=0, scale=6)
+matrix = Matrix([[3, 1], [1, 2]])
+matrix.graph2D(vector=(-1, 2), scale=10)
+#matrix.graphBasis(column=0, scale=6)
