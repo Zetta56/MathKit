@@ -1,6 +1,6 @@
 from copy import deepcopy
+from src.plane import Plane
 import matplotlib.pyplot as plt
-from matplotlib.ticker import StrMethodFormatter, FuncFormatter
 
 class Matrix:
   """
@@ -19,6 +19,7 @@ class Matrix:
     return Matrix([[0 for col in range(cols)] for row in range(rows)])
 
   def __init__(self, data):
+    """Data Format: [[a, b, c], [d, e, f], [g, h, i]]"""
     self.data = data
 
   def __str__(self):
@@ -104,6 +105,7 @@ class Matrix:
     matrix. It does so by adding the products of each corresponding
     elements from both matrices. This also handles scalar multiplication.
     """
+    # Uses multiply_scalar if 'other' is an int or float
     if isinstance(other, int) or isinstance(other, float):
       return self.multiply_scalar(other)
     # Performs matrix multiplication, assuming rows and columns are correct
@@ -126,103 +128,58 @@ class Matrix:
     if isinstance(other, int) or isinstance(other, float):
       return self.multiply_scalar(other)
 
-  def graph2D(self, vector=None, scale=1):
-    self.init_cartesian2(plt, scale)
-    plt.title("Graphical Representation")
-    # Basis vectors
-    plt.arrow(0, 0, self.data[0][0], self.data[1][0], head_width=(scale/50), color="g", label="Basis i")
-    plt.arrow(0, 0, self.data[0][1], self.data[1][1], head_width=(scale/50), color="b", label="Basis j")
-    # Vector transformation (if provided)
-    if vector is not None:
-      transformed = self * Matrix([[vector[0]], [vector[1]]])
-      plt.arrow(0, 0, vector[0], vector[1], head_width=(scale/50), color="y", label="Pre-transform")
-      plt.arrow(0, 0, transformed.data[0][0], transformed.data[1][0], head_width=(scale/50), color="tab:orange", label="Post-transform")
-      plt.figtext(0.05, 0.8, "Yellow: Pre-transformation")
-      plt.figtext(0.05, 0.75, "Orange: Post-transformation")
-    plt.gca().legend()
-    plt.show()
-
-  # def graphBasis(self, column=0, scale=1):
-  #   """
-  #   Graphs the basis vectors of a 1x2 matrix on a 2D plane.
-  #   For larger matrices, you can specify the matrix column to graph.
-  #   """
-  #   if len(self.data) == 2:
-  #     self.init_cartesian2(plt, scale)
-  #     plt.title("Basis Vectors")
-  #     plt.arrow(0, 0, self.data[0][column], 0, lw=3, head_width=(scale/50), color="g")
-  #     plt.arrow(0, 0, 0, self.data[1][column], lw=3, head_width=(scale/50), color="b")
-  #     plt.arrow(0, 0, self.data[0][column], self.data[1][column], lw=3, head_width=(scale/50), color="y")
-  #     plt.show()
-
   def graphBasis(self, column=0, scale=1):
     """
     Graphs the basis vectors of a 1x2 matrix on a 2D plane.
     For larger matrices, you can specify the matrix column to graph.
     """
     if len(self.data) == 2:
-      self.init_cartesian3(plt, scale)
+      Plane.init_cartesian2(plt, scale)
       plt.title("Basis Vectors")
+      plt.arrow(0, 0, self.data[0][column], 0, lw=3, head_width=(scale/50), color="g")
+      plt.arrow(0, 0, 0, self.data[1][column], lw=3, head_width=(scale/50), color="b")
+      plt.arrow(0, 0, self.data[0][column], self.data[1][column], lw=3, head_width=(scale/50), color="y")
       plt.show()
 
-  def init_cartesian2(self, plt, scale):
-    """Creates a formatted 2D cartesian plane."""
-    # Setup
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
-    plt.grid(True)
-    # Center axes at origin and remove unnecessary ones
-    ax.spines.right.set_visible(False)
-    ax.spines.top.set_visible(False)
-    ax.spines.left.set_position('center')
-    ax.spines.bottom.set_position('center')
-    # Set axes limits to scale
-    ax.set_aspect('equal')
-    ax.set_xlim(-scale, scale)
-    ax.set_ylim(-scale, scale)
-    # Add black(k) axes arrows that can go outside plot's borders
-    # Positioning: xy-coords on stated axis and absolute on perpendicular axis
-    ax.plot(1, 0, ">k", transform=ax.get_yaxis_transform(), clip_on=False)
-    ax.plot(0, 0, "<k", transform=ax.get_yaxis_transform(), clip_on=False)
-    ax.plot(0, 1, "^k", transform=ax.get_xaxis_transform(), clip_on=False)
-    ax.plot(0, 0, "vk", transform=ax.get_xaxis_transform(), clip_on=False)
-    # Format tick labels to hide the origin and round to 2 decimal places
-    hide_origin = lambda x, pos: "" if x == 0 else x
-    ax.xaxis.set_major_formatter(FuncFormatter(hide_origin))
-    ax.yaxis.set_major_formatter(FuncFormatter(hide_origin))
-    if type(scale) == float:
-      ax.xaxis.set_major_formatter(StrMethodFormatter('{x:.2f}'))
-      ax.yaxis.set_major_formatter(StrMethodFormatter('{x:.2f}'))
-    # Add x and y labels to axes
-    # Labelpad moves labels relative to their normal positions
-    ax.set_xlabel('x', labelpad=-30, x=1)
-    ax.set_ylabel('y', labelpad=-33, y=0.98, rotation=0)
+  def graph2D(self, vector=(1, 1), scale=1):
+    Plane.init_cartesian2(plt, scale)
+    ax = plt.gca()
+    plt.title("Vector Graph")
+    # Basis vectors
+    plt.arrow(0, 0, self.data[0][0], self.data[1][0], head_width=(scale/50), color="g", label="Basis i")
+    ax.text(self.data[0][0], self.data[1][0], f"({self.data[0][0]}, {self.data[1][0]})")
+    plt.arrow(0, 0, self.data[0][1], self.data[1][1], head_width=(scale/50), color="b", label="Basis j")
+    ax.text(self.data[0][1], self.data[1][1], f"({self.data[0][1]}, {self.data[1][1]})")
+    # Matrix transformation on specified vector
+    transformed = self * Matrix([[vector[0]], [vector[1]]])
+    plt.arrow(0, 0, vector[0], vector[1], head_width=(scale/50), color="y", label="Pre-transform")
+    ax.text(vector[0], vector[1], f"({vector[0]}, {vector[1]})")
+    plt.arrow(0, 0, transformed.data[0][0], transformed.data[1][0], head_width=(scale/50),
+      color="tab:orange", label="Post-transform")
+    ax.text(transformed.data[0][0], transformed.data[1][0], f"({transformed.data[0][0]}, {transformed.data[1][0]})")
+    # Display legend and graph
+    ax.legend()
+    plt.show()
 
-  def init_cartesian3(self, plt, scale):
-    """Creates a formatted 3D cartesian plane."""
-    # Setup
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1, projection='3d')
-    # Create custom axes centered at origin using lines
-    length = scale * 1.5
-    ax.plot([length, -length], [0, 0], [0, 0], 'k-', linewidth=1)
-    ax.plot([0, 0], [length, -length], [0, 0], 'k-', linewidth=1)
-    ax.plot([0, 0], [0, 0], [length, -length], 'k-', linewidth=1)
-    ax.text(length, 0, 0, 'x', color='r', fontsize=16)
-    ax.text(0, length, 0, 'y', color='g', fontsize=16)
-    ax.text(0, 0, length, 'z', color='b', fontsize=16)
-    # # Set axes limits to scale
-    ax.set_xlim(-scale, scale)
-    ax.set_ylim(-scale, scale)
-    ax.set_zlim(-scale, scale)
-    # print(ax.get_xticklabels()[0])
-    # Hide ticks, axes, and background
-    ax.set_xticks([])
-    ax.set_yticks([])
-    ax.set_zticks([])
-    ax.xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    ax.yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    ax.zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
-    ax._axis3don = False
-    # ax.xaxis
-    # ax.quiver(0,0,0,1,1,1)
+  def graph3D(self, vector=(1, 1, 1), scale=1):
+    Plane.init_cartesian3(plt, scale)
+    ax = plt.gca()
+    plt.title("Vector Graph")
+    # Basis vectors
+    plt.quiver(0, 0, 0, self.data[0][0], self.data[1][0], self.data[2][0], color="r", label="Basis i")
+    ax.text(self.data[0][0], self.data[1][0], self.data[2][0], f"({self.data[0][0]}, {self.data[1][0]}, {self.data[2][0]})")
+    plt.quiver(0, 0, 0, self.data[0][1], self.data[1][1], self.data[2][1], color="g", label="Basis j")
+    ax.text(self.data[0][1], self.data[1][1], self.data[2][1], f"({self.data[0][1]}, {self.data[1][1]}, {self.data[2][1]})")
+    plt.quiver(0, 0, 0, self.data[0][2], self.data[1][2], self.data[2][2], color="b", label="Basis k")
+    ax.text(self.data[0][2], self.data[1][2], self.data[2][2], f"({self.data[0][2]}, {self.data[1][2]}, {self.data[2][2]})")
+    # Matrix transformation on specified vector
+    transformed = self * Matrix([[vector[0]], [vector[1]], [vector[2]]])
+    plt.quiver(0, 0, 0, vector[0], vector[1], vector[2], color="y", label="Pre-transform")
+    ax.text(vector[0], vector[1], vector[2], f"({vector[0]}, {vector[1]}, {vector[2]})")
+    plt.quiver(0, 0, 0, transformed.data[0][0], transformed.data[1][0],
+      transformed.data[2][0], color="tab:orange", label="Post-transform")
+    ax.text(transformed.data[0][0], transformed.data[1][0], transformed.data[2][0],
+      f"({transformed.data[0][0]}, {transformed.data[1][0]}, {transformed.data[2][0]})")
+    # Display legend and graph
+    ax.legend()
+    plt.show()

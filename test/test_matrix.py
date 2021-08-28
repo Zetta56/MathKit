@@ -55,7 +55,10 @@ class TestMatrix(unittest.TestCase):
   def test_graphs(self, mock_show):
     try:
       matrix = Matrix([[1, -2], [5, 3]])
+      matrix2 = Matrix([[-1, 2, 2], [4, -1, 5], [3, -4, 5]])
+      matrix.graphBasis()
       matrix.graph2D()
+      matrix2.graph3D()
     except:
       self.fail("An error has occurred while graphing")
 
