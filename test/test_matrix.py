@@ -52,15 +52,43 @@ class TestMatrix(unittest.TestCase):
 
   # Creates a MagicMock of plt.show(), so that graphs don't pop up during tests
   @patch("src.matrix.plt.show")
-  def test_graphs(self, mock_show):
+  def test_graph(self, mock_show):
     try:
       matrix = Matrix([[1, -2], [5, 3]])
       matrix2 = Matrix([[-1, 2, 2], [4, -1, 5], [3, -4, 5]])
-      matrix.graphBasis()
-      matrix.graph2D()
-      matrix2.graph3D()
+      matrix3 = Matrix([[1], [2], [3]])
+      matrix.graph()
+      matrix2.graph()
+      self.assertRaises(ValueError, matrix3.graph)
     except:
-      self.fail("An error has occurred while graphing")
+      self.fail("An error has occurred while general graphing")
+
+  @patch("src.matrix.plt.show")
+  def test_graph2x1(self, mock_show):
+    try:
+      matrix = Matrix([[1, -2], [5, 3]])
+      matrix.graph2x1()
+      matrix.graph2x1(column=1, scale=6)
+    except:
+      self.fail("An error has occurred while graphing 2x1")
+
+  @patch("src.matrix.plt.show")
+  def test_graph2x2(self, mock_show):
+    try:
+      matrix = Matrix([[1, -2], [5, 3]])
+      matrix.graph2x2()
+      matrix.graph2x2(vector=(-1, 2), scale=5)
+    except:
+      self.fail("An error has occurred while graphing 2x2")
+
+  @patch("src.matrix.plt.show")
+  def test_graph3x3(self, mock_show):
+    try:
+      matrix = Matrix([[-1, 2, 2], [4, -1, 5], [3, -4, 5]])
+      matrix.graph3x3()
+      matrix.graph3x3(vector=(4, -2, 1), scale=10)
+    except:
+      self.fail("An error has occurred while graphing 3x3")
 
 if __name__ == '__main__':
   unittest.main()

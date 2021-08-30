@@ -40,12 +40,29 @@ class TestPlane(unittest.TestCase):
     self.assertAlmostEqual(polar[1], 320.19, places=2)
 
   @patch("src.matrix.plt.show")
-  def test_graphs(self, mock_show):
+  def test_graph_rectangular(self, mock_show):
+    try:
+      Plane.graph_rectangular(3, 4, scale=5)
+    except:
+      self.fail("An error has occurred while graphing rectangular")
+
+  @patch("src.matrix.plt.show")
+  def test_graph_polar(self, mock_show):
+    try:
+      Plane.graph_polar(10, 3)
+      Plane.graph_polar(10, 3, degrees=True)
+    except:
+      self.fail("An error has occurred while graphing polar")
+
+  @patch("src.matrix.plt.show")
+  def test_init_graphs(self, mock_show):
     try:
       Plane.init_cartesian2(plt, scale=5)
       Plane.init_cartesian3(plt, scale=3)
+      Plane.init_polar(plt)
+      Plane.init_polar(plt, degrees=True)
     except:
-      self.fail("An error has occurred while graphing")
+      self.fail("An error has occurred while initializing graphs")
 
 if __name__ == '__main__':
   unittest.main()
