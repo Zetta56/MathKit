@@ -5,15 +5,15 @@ import matplotlib.ticker as ticker
 
 class Plane:
   @staticmethod
-  def to_rectangular(r, theta, degrees=False):
+  def to_rectangular(r, theta, isDegrees=True):
     """Finds rectangular co-ords using: rect = r(cos(theta) + i*sin(theta))"""
-    radians = math.radians(theta) if degrees else theta
+    radians = math.radians(theta) if isDegrees else theta
     a = r * math.cos(radians)
     b = r * math.sin(radians)
     return (a, b)
 
   @staticmethod
-  def to_polar(a, b, degrees=False):
+  def to_polar(a, b, isDegrees=True):
     """Finds polar co-ords using: r = sqrt(x**2+y**2); theta = atan(y/x)"""
     r = math.sqrt(a**2 + b**2)
     theta = math.atan(b / a)
@@ -24,21 +24,29 @@ class Plane:
       theta = math.pi - abs(theta)
     elif b < 0:
       theta = 2 * math.pi - abs(theta)
-    theta = math.degrees(theta) if degrees else theta
+    theta = math.degrees(theta) if isDegrees else theta
     return (r, theta)
 
   @staticmethod
-  def graph_rectangular(a, b, scale=1):
+  def graph_rectangular(a=None, b=None, scale=1):
     Plane.init_cartesian2(plt, scale, x_axis_label='Re', y_axis_label='Im')
     plt.title("Rectangular Graph")
+    # 'a' can double-down as a coordinate, in the format (a, b)
+    if isinstance(a, tuple):
+      b = a[1]
+      a = a[0] # this line has to be last, or else 'b' will be assigned to a[0][1]
     plt.scatter(a, b)
     plt.show()
 
   @staticmethod
-  def graph_polar(theta, r, degrees=False):
-    Plane.init_polar(plt, degrees=degrees)
-    radians = math.radians(degrees) if degrees else theta
-    plt.scatter(radians, r)
+  def graph_polar(r=None, theta=None, isDegrees=True):
+    Plane.init_polar(plt, isDegrees=isDegrees)
+    # 'r' can double-down as a coordinate, in the format (r, theta)
+    if isinstance(r, tuple):
+      theta = r[1]
+      r = r[0]
+    theta = math.radians(theta) if isDegrees else theta
+    plt.scatter(theta, r)
     plt.title("Polar Graph")
     plt.show()
 
@@ -95,11 +103,11 @@ class Plane:
     ax.set_zlim(-scale, scale)
 
   @staticmethod
-  def init_polar(plt, degrees=False):
+  def init_polar(plt, isDegrees=True):
     """Creates a formatted polar plane."""
     # Creates a figure and polar plot from matplotlib's base projections
     fig, ax = plt.subplots(subplot_kw={'projection': 'polar'})
-    if not degrees:
+    if not isDegrees:
       angles = list(ax.get_xticks())
       labels = [str(label / math.pi) + "π" for label in angles]
       ax.set_xticks(ax.get_xticks())

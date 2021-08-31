@@ -1,6 +1,7 @@
 from src.triangle import Triangle
 from src.matrix import Matrix
 from src.plane import Plane
+import math
 
 # Sample Usage:
 # triangle = Triangle(a=4, b=6, B=80)
@@ -18,5 +19,8 @@ from src.plane import Plane
 # matrix3 = Matrix([[1], [2], [3]])
 # matrix3.graph(scale=10)
 # Plane.graph_rectangular(3, 4, scale=5)
-# Plane.graph_polar(10, 3)
-# Plane.graph_polar(10, 3, degrees=True)
+# Plane.graph_rectangular((3, 4), scale=5)
+# Plane.graph_polar((3, 10))
+# Plane.graph_polar(3, 10)
+# Plane.graph_polar(3, 50, isDegrees=False)
+# Plane.to_rectangular(11, 29, isDegrees=True)
