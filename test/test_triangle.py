@@ -73,5 +73,6 @@ class TriangleTest(unittest.TestCase):
     except:
       self.fail("An error has occurred while graphing triangle")
 
+# Run all tests in class if this file is ran (renamed to __main__ when running)
 if __name__ == '__main__':
   unittest.main()

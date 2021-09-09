@@ -6,7 +6,13 @@ import matplotlib.ticker as ticker
 class Plane:
   @staticmethod
   def to_rectangular(r, theta, isDegrees=True):
-    """Finds rectangular co-ords using: rect = r(cos(theta) + i*sin(theta))"""
+    """
+    Converts polar co-ordinate (r, theta) to rectangular co-ordinate (a, b).
+    This can then be put into rectangular form (a + bi).
+    Formulas:
+    - a = r * cos(theta)
+    - b = r * sin(theta)
+    """
     radians = math.radians(theta) if isDegrees else theta
     a = r * math.cos(radians)
     b = r * math.sin(radians)
@@ -14,7 +20,12 @@ class Plane:
 
   @staticmethod
   def to_polar(a, b, isDegrees=True):
-    """Finds polar co-ords using: r = sqrt(x**2+y**2); theta = atan(y/x)"""
+    """
+    Converts rectangular co-ordinate (a, b) to polar co-ordinate (r, theta).
+    Formulas:
+    - r = sqrt(x**2+y**2)
+    - theta = atan(y/x)
+    """
     r = math.sqrt(a**2 + b**2)
     theta = math.atan(b / a)
     # Correct angle for quadrants 3, 2, and 4, respectively
@@ -28,7 +39,20 @@ class Plane:
     return (r, theta)
 
   @staticmethod
+  def to_quadrant(angle, quadrant):
+    """Converts a reference angle to an angle in a specified quadrant"""
+    if quadrant == 1:
+      return angle
+    if quadrant == 2:
+      return 180 - angle
+    if quadrant == 3:
+      return 180 + angle
+    if quadrant == 4:
+      return 360 - angle
+
+  @staticmethod
   def graph_rectangular(a=None, b=None, scale=1):
+    """Plots rectangular co-ordinate on a rectangular plane"""
     Plane.init_cartesian2(plt, scale, x_axis_label='Re', y_axis_label='Im')
     plt.title("Rectangular Graph")
     # 'a' can double-down as a coordinate, in the format (a, b)
@@ -40,6 +64,7 @@ class Plane:
 
   @staticmethod
   def graph_polar(r=None, theta=None, isDegrees=True):
+    """Plots polar co-ordinate on a polar plane"""
     Plane.init_polar(plt, isDegrees=isDegrees)
     # 'r' can double-down as a coordinate, in the format (r, theta)
     if isinstance(r, tuple):

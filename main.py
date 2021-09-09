@@ -1,6 +1,7 @@
 from src.triangle import Triangle
 from src.matrix import Matrix
 from src.plane import Plane
+from src.probability import Probability
 import math
 
 # Sample Usage:
@@ -8,7 +9,7 @@ import math
 # triangle.solve()
 # triangle.graph()
 
-# matrix = Matrix([[3, 1], [1, 2]])
+matrix = Matrix([[3, 1], [1, 2]])
 # matrix2 = Matrix([[-1, 2, 2], [4, -1, 5], [3, -4, 5]])
 # matrix.graph2x2(scale=5)
 # matrix.graph2x2(vector=(-1, 2), scale=5)
@@ -24,3 +25,5 @@ import math
 # Plane.graph_polar(3, 10)
 # Plane.graph_polar(3, 50, isDegrees=False)
 # Plane.to_rectangular(11, 29, isDegrees=True)
+# print(Probability.permutations(15, 3))
+# print(matrix.to_row_echelon())

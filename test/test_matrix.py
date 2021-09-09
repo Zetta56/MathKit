@@ -3,29 +3,61 @@ from unittest.mock import patch
 from src.matrix import Matrix
 
 class TestMatrix(unittest.TestCase):
-  def test_discriminant2(self):
+  def test_determinant2(self):
     matrix = Matrix([[1, -2], [5, 3]])
-    self.assertEqual(matrix.discriminant2(), 13)
+    self.assertEqual(matrix.determinant(), 13)
 
-  def test_invalid_discriminant2(self):
+  def test_determinant3(self):
     matrix = Matrix([[6, -6, -8], [1, -7, -7], [-1, 4, 4]])
-    self.assertRaises(ValueError, matrix.discriminant2)
-
-  def test_discriminant3(self):
-    matrix = Matrix([[6, -6, -8], [1, -7, -7], [-1, 4, 4]])
-    self.assertEqual(matrix.discriminant3(), 6)
-    
-  def test_invalid_discriminant3(self):
-    matrix = Matrix([[1, -2], [5, 3]])
-    self.assertRaises(ValueError, matrix.discriminant3)
+    self.assertEqual(matrix.determinant(), 6)
 
   def test_inverse2(self):
-    matrix = Matrix([[4, -7], [2, -5]])
-    inverse = matrix.inverse2().data
-    self.assertAlmostEqual(inverse[0][0], 5/6, places=2)
-    self.assertAlmostEqual(inverse[0][1], -7/6, places=2)
-    self.assertAlmostEqual(inverse[1][0], 1/3, places=2)
-    self.assertAlmostEqual(inverse[1][1], -2/3, places=2)
+    matrix =  Matrix([[4, -7], [2, -5]])
+    inverse = matrix.inverse()
+    correct =  Matrix([[5/6, -7/6], [1/3, -2/3]])
+    for row in range(len(matrix.data)):
+      for col in range(len(matrix.data[0])):
+        self.assertAlmostEqual(inverse.data[row][col], correct.data[row][col], places=2)
+
+  def test_inverse3(self):
+    matrix = Matrix([[3, 0, 2], [2, 0, -2], [0, 1, 1]])
+    inverse = matrix.inverse()
+    correct = Matrix([[0.2, 0.2, 0], [-0.2, 0.3, 1], [0.2, -0.3, 0]])
+    for row in range(len(matrix.data)):
+      for col in range(len(matrix.data[0])):
+        self.assertAlmostEqual(inverse.data[row][col], correct.data[row][col], places=2)
+
+  def test_row_echelon2x2(self):
+    matrix = Matrix([[6, 4], [3, 13]])
+    ref = matrix.to_row_echelon()
+    correct = Matrix([[1, 2/3], [0, 1]])
+    for row in range(len(matrix.data)):
+      for col in range(len(matrix.data[0])):
+        self.assertAlmostEqual(ref.data[row][col], correct.data[row][col], places=2)
+    
+  def test_row_echelon3x4(self):
+    matrix = Matrix([[5, 3, 3, 2], [6, -9, 2, 5], [-1, 5, -7, 2]])
+    ref = matrix.to_row_echelon()
+    correct = Matrix([[1, 3/5, 3/5, 2/5], [0, 1, 8/63, -13/63], [0, 0, 1, -1/2]])
+    for row in range(len(matrix.data)):
+      for col in range(len(matrix.data[0])):
+        self.assertAlmostEqual(ref.data[row][col], correct.data[row][col], places=2)
+
+  def test_row_echelon_interchange(self):
+    matrix = Matrix([[0, 0, 3, 1], [-2, 0, 6, 7], [0, 5, -12, 2]])
+    ref = matrix.to_row_echelon()
+    correct = Matrix([[1, 0, -3, -7/2], [0, 1, -12/5, 2/5], [0, 0, 1, 1/3]])
+    for row in range(len(matrix.data)):
+      for col in range(len(matrix.data[0])):
+        self.assertAlmostEqual(ref.data[row][col], correct.data[row][col], places=2)
+
+  def test_row_echelon_zero_column(self):
+    matrix = Matrix([[0, 0, 3, 1], [0, 0, 0, 0], [0, 5, -12, 2]])
+    ref = matrix.to_row_echelon()
+    correct = Matrix([[0, 1, -12/5, 2/5], [0, 0, 1, 1/3], [0, 0, 0, 0]])
+    for row in range(len(matrix.data)):
+      for col in range(len(matrix.data[0])):
+        self.assertAlmostEqual(ref.data[row][col], correct.data[row][col], places=2)
 
   def test_add(self):
     matrix1 = Matrix([[-2, 3, 1], [-1, 5, 5]])
