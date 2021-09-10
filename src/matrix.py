@@ -183,12 +183,14 @@ class Matrix:
             # Correcting entry row index after swapping
             entry_row = previous_row + 1
           # Set the entry term to 1 by dividing its row by the entry itself
-          ref.data[entry_row] = [element / ref.data[entry_row][entry_col] for element in ref.data[entry_row]]
-          # Set the terms in rows below the entry term to 0
+          ref.data[entry_row] = [element / ref.data[entry_row][entry_col]
+            for element in ref.data[entry_row]]
+          # Set the terms below the entry term to 0 by subtracting a multiple of the entry row
           for row in range(entry_row + 1, len(ref.data)):
-            # Get a multiple of the entry row that can subtract from the current element to equal 0
-            # You must use the entry row because its left-most elements are already 0
-            # and 0 - 0 = 0, preserving any 0s that were already in the current row
+            # Get a multiple of the entry row that can subtract from the current element to
+            # equal 0. You must use the top-left-most row (entry row) because
+            # its left-most elements are already 0 and 0 - 0x = 0, preserving
+            # any 0s that were already in the current row
             multiple = [ref.data[row][entry_col] * element for element in ref.data[entry_row]]
             for col in range(len(ref.data[row])):
               ref.data[row][col] -= multiple[col]
@@ -213,6 +215,20 @@ class Matrix:
     - The leading entry in each row must be the only non-zero number in its column.
     - Leading non-zero terms are 1
     """
+    ref = self.to_row_echelon()
+    # Loop backwards through each element in column-major order
+    for entry_row in range(len(ref.data) - 1, -1, -1):
+      entry = next(iter([element for element in ref.data[entry_row] if element != 0]))
+      entry_col = ref.data[entry_row].index(entry)
+      for row in range(entry_row - 1, -1, -1):
+        # Get a multiple of the entry row that can subtract from the current element to
+        # equal 0. You must use the top-left-most row (entry row) because
+        # its left-most elements are already 0 and 0 - 0x = 0, preserving
+        # any 0s that were already in the current row
+        multiple = [ref.data[row][entry_col] * element for element in ref.data[entry_row]]
+        for col in range(len(ref.data[row])):
+          ref.data[row][col] -= multiple[col]
+    return ref
 
   def __add__(self, other):
     """

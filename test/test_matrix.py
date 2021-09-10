@@ -59,6 +59,14 @@ class TestMatrix(unittest.TestCase):
       for col in range(len(matrix.data[0])):
         self.assertAlmostEqual(ref.data[row][col], correct.data[row][col], places=2)
 
+  def test_reduced_row_echelon(self):
+    matrix = Matrix([[5, 2, 5, -3], [6, 1, 0, 7], [-4, 3, -1, 3]])
+    ref = matrix.to_reduced_row_echelon()
+    correct = Matrix([[1, 0, 0, 107/117], [0, 1, 0, 59/39], [0, 0, 1, -248/117]])
+    for row in range(len(matrix.data)):
+      for col in range(len(matrix.data[0])):
+        self.assertAlmostEqual(ref.data[row][col], correct.data[row][col], places=2)
+
   def test_add(self):
     matrix1 = Matrix([[-2, 3, 1], [-1, 5, 5]])
     matrix2 = Matrix([[5, -5, -5], [4, -3, 4]])
