@@ -80,16 +80,30 @@ class Matrix:
     described as the sum of the products of the first row elements multiplied
     by their cofactors (read more in cofactor()). In essence, determinants
     are special numbers with many useful properties related to their matrices.
-    They are used to find their inverse matrices, mensuration (ex. area,
-    volume) of shapes formed by their basis vectors, and linear dependence when
-    the determinant is 0 (whether their basis vectors' shape is missing
+    They are used to find their inverse matrices, permutations, mensuration (ex.
+    area, volume) of shapes formed by their basis vectors, and linear dependence
+    when the determinant is 0 (whether their basis vectors' shape is missing
     dimensions, like a cube becoming a square when all its points are on
     the same plane). When the determinant negative, you can also think of
     it as flipping the graphed shape's orientation.
 
-    Formula: det(A) = a11*det(A11) - a12*det(A12) + a13*det(A13) ... +- a1n*det(A1n)
+    Formula: det(A) = A11*det(A11) - A12*det(A12) + A13*det(A13) ... +- A1n*det(A1n)
     
-    *a11 is read as 1st row and 1st column of matrix A
+    *A11 is read as 1st row and 1st column of matrix A
+
+    Another definition for determinants is that they're the sum of all permutations
+    of n-element symmetric groups, or sets of bijections. Bijections (represented
+    by pi) are one-to-one functions where each output maps to exactly 1 input.
+    These can be inverted (ex. pi({1, 2}) -> {2, 1}) and the number of inversions
+    are used to determine their sign (explains where the sign comes from in
+    the cofactor definition)
+
+    Formula: sum(sign(pi)*A1(pi(1))*A2(pi(2))...*An(pi(n)) for each bijection)
+    
+    Ex. If A is a 2x2 matrix:
+    pi1 = {1,2} => {1, 2} (0 inversions)
+    pi2 = {1,2} => {2, 1} (1 inversion)
+    det(A) = (1)*(a11)*(a22) + (-1)*(a12)*(a21)
 
     **Do not pass in an argument for 'submatrix'. This is used internally for recursive calls
     """
@@ -141,8 +155,9 @@ class Matrix:
     # Minor is defined as the determinant of a square matrix when you
     # eliminate the column and row of the processed element
     minor = self.determinant(filtered)
-    # Sign is negative if sum of row and column indices is even (odd when counting from 0)
-    # Formula: A[i][j] = (-1)^(i+j)
+    # The sign is negative if row + col is even (odd if counting from 0)
+    # Formula (Permutations): sign = (-1)^(inversions)
+    # Formula (Cofactors): Aij = (-1)^(i + j)
     # Visually: |+ - +|
     #           |- + -|
     #           |+ - +|
