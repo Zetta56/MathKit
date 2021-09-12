@@ -1,13 +1,19 @@
 from copy import deepcopy
+
+import math
 from src.plane import Plane
 import matplotlib.pyplot as plt
 
 class Matrix:
   """
   A matrix that supports mathematical operations and graphing. As matrices
-  represent tranformations, the columns are the component transformed (x, y, etc.)
-  and the rows are the variables (x, y, etc.) used to determine the transformed
-  value. You can initialize a matrix with a 2D Array (ex. [[a, b, c], [d, e, f], [g, h, i]]).
+  represent tranformations, the rows are specific components in each basis
+  vector (x, y, etc.) and the columns are the basis vectors used to transform
+  other vectors. You can initialize a matrix with a 2D list (ex. [[a, b, c],
+  [d, e, f], [g, h, i]]) or a 1D list (ex. [a, b, c]).
+
+  *Matrix: |a  b|      Vectors: i(a,c)
+           |c  d|               j(b,d)
 
   **Since matrix division doesn't exist, you have to multiply by the inverse
   on the left/right. Note that matrix multiplication is NOT commutative
@@ -25,7 +31,13 @@ class Matrix:
     return Matrix([[0 for col in range(cols)] for row in range(rows)])
 
   def __init__(self, data):
-    self.data = data
+    # If data is a 2D list, copy it exactly
+    if(all([isinstance(item, list) for item in data])):
+      self.data = data
+    # If data is a 1D list, format it into a 2D list (used for nx1 vectors)
+    if(all([isinstance(item, int) or isinstance(item, float) for item in data])):
+      self.data = [[item] for item in data]
+
 
   def __str__(self):
     """
@@ -35,44 +47,12 @@ class Matrix:
     """
     output = "\n"
     for row in self.data:
+      output += "|"
       for element in row:
         # Left aligned in 6-wide space, rounded to 4 decimal places, dropped trailing 0s
-        output += f"{element:<8.4g}"
-      output += "\n"
+        output += f"{element:^8.4g}"
+      output += "|\n"
     return output
-
-  def determinant2(self):
-    """
-    Finds determinant of 2D matrix. Graphically, this represents the area
-    of the shape formed by basis vectors i and j
-    Formula: |a  b|  =>  (a x d) - (b x c)
-             |c  d|
-    """
-    if len(self.data) != 2 or len(self.data[0]) != 2:
-      raise ValueError("Matrix must contain 2 rows and 2 columns")
-    return (self.data[0][0] * self.data[1][1] - self.data[0][1] * self.data[1][0])
-
-  def determinant3(self):
-    """
-    Finds disciminant by adding top-left to bottom-right diagonals and
-    subtracting bottom-left to top-right diagonals (shortcut)
-    Graphically, this represents the volume of the shape formed by basis
-    vectors i, j, and k.
-    Formula: |a  b  c|      
-             |d  e  f|  =>  ((a x e x i) + (b x f g) + (c x d x h)) -
-             |g  h  i|      ((g x e x c) + (h x f x a) + (i x d x b))
-    """
-    if len(self.data) != 3 or len(self.data[0]) != 3:
-      raise ValueError("Matrix must contain 3 rows and 3 columns")
-
-    total = 0
-    for i in range(len(self.data[0])):
-      positive, negative = 1, 1
-      for j in range(len(self.data)):
-        positive *= self.data[(i + j) % len(self.data[0])][j]
-        negative *= self.data[(i + j) % len(self.data[0])][len(self.data) - 1 - j]
-      total += positive - negative
-    return total
 
   def determinant(self, submatrix=None):
     """
@@ -95,17 +75,19 @@ class Matrix:
     of n-element symmetric groups, or sets of bijections. Bijections (represented
     by pi) are one-to-one functions where each output maps to exactly 1 input.
     These can be inverted (ex. pi({1, 2}) -> {2, 1}) and the number of inversions
-    are used to determine their sign (explains where the sign comes from in
-    the cofactor definition)
+    are tell you their sign (and explains where the signs come from in the
+    cofactor definition!)
 
-    Formula: sum(sign(pi)*A1(pi(1))*A2(pi(2))...*An(pi(n)) for each bijection)
+    Formula:
+    det(A) = S1 + S2 + ... + Sn
+    Sx = sign(pix)*A1(pix(1))*A2(pix(2))*...*An(pix(n))
     
     Ex. If A is a 2x2 matrix:
-    pi1 = {1,2} => {1, 2} (0 inversions)
-    pi2 = {1,2} => {2, 1} (1 inversion)
+    S1 = {1,2} => {1, 2} (0 inversions, sign = 1)
+    S2 = {1,2} => {2, 1} (1 inversion, sign = -1)
     det(A) = (1)*(a11)*(a22) + (-1)*(a12)*(a21)
 
-    **Do not pass in an argument for 'submatrix'. This is used internally for recursive calls
+    *Do not pass in an argument for 'submatrix'. This is used internally for recursive calls
     """
     matrix = self.data if submatrix is None else submatrix
     # Base cases when matrix order is either 1x1 or 0x0
@@ -131,7 +113,6 @@ class Matrix:
     
     *r1 is the element at that column and 1st row (ex. a, b, 1, 0), while
      r2 is the same but for the 2nd row.
-    **Notice how the final matrix's signs match up to the cofactor signs
     """
     # Create a new cofactors matrix
     cofactors = Matrix.zeros(len(self.data), len(self.data[0]))
@@ -144,9 +125,10 @@ class Matrix:
 
   def cofactor(self, row, col, submatrix=None):
     """
-    Gets the cofactor of an element. By definition, this is the products of 
-    its minor multiplied by its sign. This is useful to find determinants
-    and inverses.
+    Gets the cofactor of the element at the specified row and col (counting
+    from 0).By definition, this is the product of its minor multiplied by
+    its sign. This is useful to find determinants and inverses.
+
     *Do not supply a submatrix. That is used for recursive calls from determinant()
     """
     matrix = self.data if submatrix is None else submatrix
@@ -215,9 +197,6 @@ class Matrix:
           break
     return ref
 
-  def multiply_row(self, row, scalar):
-    return [scalar * element for element in row]
-
   def to_reduced_row_echelon(self):
     """
     Returns the calling matrix in reduced row-echelon form using Gauss-Jordan
@@ -230,20 +209,108 @@ class Matrix:
     - The leading entry in each row must be the only non-zero number in its column.
     - Leading non-zero terms are 1
     """
-    ref = self.to_row_echelon()
-    # Loop backwards through each element in column-major order
-    for entry_row in range(len(ref.data) - 1, -1, -1):
-      entry = next(iter([element for element in ref.data[entry_row] if element != 0]))
-      entry_col = ref.data[entry_row].index(entry)
+    # Put matrix into row echelon form
+    rref = self.to_row_echelon()
+    # Loop through each row from bottom to top
+    for entry_row in range(len(rref.data) - 1, -1, -1):
+      # Get the leading non-zero entry and its column index in the row
+      entry = next(iter([element for element in rref.data[entry_row] if element != 0]))
+      entry_col = rref.data[entry_row].index(entry)
+      # Replace the terms above the leading entry with 0 by multiplying its row
+      # by a multiple of the leading entry's row
       for row in range(entry_row - 1, -1, -1):
-        # Get a multiple of the entry row that can subtract from the current element to
-        # equal 0. You must use the top-left-most row (entry row) because
-        # its left-most elements are already 0 and 0 - 0x = 0, preserving
-        # any 0s that were already in the current row
-        multiple = [ref.data[row][entry_col] * element for element in ref.data[entry_row]]
-        for col in range(len(ref.data[row])):
-          ref.data[row][col] -= multiple[col]
-    return ref
+        multiple = [rref.data[row][entry_col] * element for element in rref.data[entry_row]]
+        for col in range(len(rref.data[row])):
+          rref.data[row][col] -= multiple[col]
+    return rref
+
+  def dot(self, other, col=0):
+    """
+    Finds the dot product of two column vectors from this matrix and the other
+    matrix by summing up their corresponding components. Graphically, this is
+    the length of one vector if it were projected onto the line the other vector
+    in on and scaled by the other vector. Since dot products are commutative,
+    this length will be the same no matter which matrix is being projected.
+    It's also noteworthy that this is computationally equivalent to multiplying
+    a 1xn matrix with an nx1 matrix and that a 0 dot product means that
+    the two vectors are perpendicular.
+
+    Dot products can also show you the cosine of the angle between the two
+    known vectors because cos(theta) is the ratio of the adjacent vector to
+    the hypoteneuse vector, or the length of the adjacent vector when projected
+    and scaled onto the hypoteneuse vector.
+
+    Ex. |a|.|c| = ac+bd     |a  b|*|c| = ac+bd
+        |b| |d|                    |d|
+
+    *col is the column in each matrix to extract a vector from
+    """
+    if len(self.data) == len(other.data):
+      return sum([self.data[row][col] * other.data[row][col] for row in range(len(other.data))])
+    else:
+      return None
+
+  def cross(self, other):
+    """
+    Finds the cross product between two 3x1 matrices (3D vectors). By definition,
+    this is a 3D vector perpendicular to the two known vectors in a direction
+    following the right-hand-rule (this direction is a convention agreed upon
+    by mathemeticians for convenience) and a magnitude equivalent to the area
+    of a parallelogram formed by the two known vectors. These particular
+    properties are what makes cross products useful, especially in the study of
+    rotations and physics. You can also find the volume of a parallelepiped
+    formed by the two known vectors and another variable vector (x, y, z) by
+    multiplying (x, y, z) by the cross product of the known vectors because
+    V = bh, where b=cross product and h=(x, y, z).
+
+    Formula:
+    Given v=self and w=other,
+    (v2w3-w2v3, v1w3-w1v3, v1w2-w1v2)
+
+    Proof:
+    det(|x  v1  w1|              |x|
+        |y  v2  w2| = |p1 p2 p2|*|y|
+        |z  v3  w3|)             |z|
+
+    *Right-hand-rule: index finger points forward, middle finger points left,
+    thumb points up
+    """
+    # Check if both matrices are 3D vectors (3 rows, 1 column)
+    if len(self.data) == 3 and len(other.data) == 3:
+      # Create a matrix with the first column being a variable input vector
+      # (1s are placeholders), and the second and third being this vector
+      # and the other vector.
+      combined = Matrix([[1, self.data[row][0], other.data[row][0]] for row in range(len(self.data))])
+      # Return a new vector containing the cofactors of each variable vector in the combined matrix
+      return Matrix([combined.cofactor(row, 0) for row in range(len(combined.data))])
+
+  # def eigenvalues(self):
+  #   """
+  #   Finds the eigenvectors of the current matrix, or the vectors that are only
+  #   scaled (not rotated at all) by a certain scale factor (the eigenvalue)
+  #   when performing this matrix transformation.
+
+  #   Formula:
+  #   λ = eigenvalue to find, In = identity matrix for nxn matrix, A = this matrix
+  #   det(λIn - A) = 0
+  #   |a-λ  b|
+  #   | c  d-λ|
+  #   (a-λ)(d-λ)-bc = 0
+  #   ad+λ^2-adλ-bc = 0
+  #   λ^2-adλ+ad-bc = 0
+  #   λ^2-adλ = bc-ad
+  #   λ^2-adλ+(a^2*d^2)/4 = bc-ad+(a^2*d^2)/4
+  #   (λ-ad/2)^2 = bc-ad+(a^2*d^2)/4
+  #   λ = sqrt(bc-ad+(a^2*d^2)/4)+ad/2
+
+  #   Proof:
+  #   Av = λv          | Transformation representing the above definition
+  #   Av - λv = 0      | Subtract λv from both sides to put them on the same side of the equation
+  #   Av - λ(In)v = 0  | Multiply λv by In to turn λv from scalar to vector multiplication
+  #   (A - λIn)v = 0   | Factor out v (assume v is non-zero because v=0 has infinite eigenvalues)
+  #   det(A - λIn) = 0 | The only time when an nxn matrix can to multiply to 0 (n-dimensions
+  #                    | to 0-dimensions) is it squishes space to a lower dimension (indicated by det(A)=0)
+  #   """
 
   def __add__(self, other):
     """
@@ -277,9 +344,8 @@ class Matrix:
     """
     Multiplies each row in this matrix by each column in the other
     matrix. It does so by adding the products of each corresponding
-    elements from both rows/columns. Graphically, this transforms
-    the other vector's x and y components by this matrix's x and y
-    components (columns), respectively.
+    elements from both rows/columns. Graphically, this transforms the other
+    matrix's x and y components by this matrix's x and y coefficients
 
     ex. |a  b| * |x| => x * |a| + y * |b| => |ax + by|
         |c  d|   |y|        |c|       |d|    |cx + dy|
@@ -287,14 +353,16 @@ class Matrix:
     # Uses multiply_scalar if 'other' is an int or float
     if isinstance(other, int) or isinstance(other, float):
       return self.multiply_scalar(other)
-    # Performs matrix multiplication, assuming rows and columns are correct
+    # Performs matrix multiplication if orders (row and columns) are correct
     elif isinstance(other, Matrix):
       if len(self.data[0]) != len(other.data):
         return None
       output = Matrix.zeros(len(other.data), len(other.data[0]))
-      # Fill each element with sum of row-column products
+      # Loop through this matrix's row and other matrix's columns
       for row in range(len(self.data)):
         for col in range(len(other.data[0])):
+          # Fills output with sum of products of corresponding elements in
+          # row-column combinations
           sum = 0
           for i in range(len(self.data[0])):
             sum += self.data[row][i] * other.data[i][col]
@@ -320,17 +388,17 @@ class Matrix:
     the current matrix's order (number of rows and columns)
     """
     if len(self.data) == 2 and len(self.data[0]) == 1:
-      self.graph2x1(column=column, scale=scale)
+      self.graph_2x1(column=column, scale=scale)
     elif len(self.data) == 2 and len(self.data[0]) == 2:
       vector = (1, 1) if vector is None else vector
-      self.graph2x2(vector=vector, scale=scale)
+      self.graph_2x2(vector=vector, scale=scale)
     elif len(self.data) == 3 and len(self.data[0]) == 3:
       vector = (1, 1, 1) if vector is None else vector
-      self.graph3x3(vector=vector, scale=scale)
+      self.graph_3x3(vector=vector, scale=scale)
     else:
       raise ValueError("Matrix is neither a 2x1, 2x2, nor 3x3 matrix")
 
-  def graph2x1(self, column=0, scale=1):
+  def graph_2x1(self, column=0, scale=1):
     """
     Graphs the basis vectors of a 2x1 matrix on a 2D plane.
     For larger matrices, you can specify the matrix column to graph.
@@ -345,7 +413,7 @@ class Matrix:
       plt.arrow(0, 0, self.data[0][column], self.data[1][column], lw=3, head_width=(scale/50), color="y")
       plt.show()
 
-  def graph2x2(self, vector=(1, 1), scale=1):
+  def graph_2x2(self, vector=(1, 1), scale=1):
     """
     Graphs the basis vectors of a 2x2 matrix, as well as its transformation
     on a given vector.
@@ -359,7 +427,7 @@ class Matrix:
     plt.arrow(0, 0, self.data[0][1], self.data[1][1], head_width=(scale/50), color="b", label="Basis j")
     ax.text(self.data[0][1], self.data[1][1], f"({self.data[0][1]}, {self.data[1][1]})")
     # Pre-tranformation
-    transformed = self * Matrix([[vector[0]], [vector[1]]])
+    transformed = self * Matrix([vector[0], vector[1]])
     plt.arrow(0, 0, vector[0], vector[1], head_width=(scale/50), color="y", label="Pre-transform")
     ax.text(vector[0], vector[1], f"({vector[0]}, {vector[1]})")
     # Post-tranformation
@@ -370,7 +438,7 @@ class Matrix:
     ax.legend()
     plt.show()
 
-  def graph3x3(self, vector=(1, 1, 1), scale=1):
+  def graph_3x3(self, vector=(1, 1, 1), scale=1):
     """
     Graphs the basis vectors of a 3x3 matrix, as well as its transformation
     on a given vector.
@@ -386,7 +454,7 @@ class Matrix:
     plt.quiver(0, 0, 0, self.data[0][2], self.data[1][2], self.data[2][2], color="b", label="Basis k")
     ax.text(self.data[0][2], self.data[1][2], self.data[2][2], f"({self.data[0][2]}, {self.data[1][2]}, {self.data[2][2]})")
     # Pre-transformation
-    transformed = self * Matrix([[vector[0]], [vector[1]], [vector[2]]])
+    transformed = self * Matrix([vector[0], vector[1], vector[2]])
     plt.quiver(0, 0, 0, vector[0], vector[1], vector[2], color="y", label="Pre-transform")
     ax.text(vector[0], vector[1], vector[2], f"({vector[0]}, {vector[1]}, {vector[2]})")
     # Post-transformation
