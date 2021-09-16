@@ -116,43 +116,40 @@ class TestMatrix(unittest.TestCase):
 
   # Creates a MagicMock of plt.show(), so that graphs don't pop up during tests
   @patch("src.matrix.plt.show")
-  def test_graph(self, mock_show):
+  def test_graph_vector2(self, mock_show):
     try:
       matrix = Matrix([[1, -2], [5, 3]])
-      matrix2 = Matrix([[-1, 2, 2], [4, -1, 5], [3, -4, 5]])
-      matrix3 = Matrix([[1], [2], [3]])
-      matrix.graph()
-      matrix2.graph()
-      self.assertRaises(ValueError, matrix3.graph)
+      matrix.graph_vector()
+      matrix.graph_vector(col=1, scale=6)
     except:
-      self.fail("An error has occurred while graphing")
+      self.fail("An error has occurred while graphing 2D vector")
 
   @patch("src.matrix.plt.show")
-  def test_graph_2x1(self, mock_show):
+  def test_graph_vector3(self, mock_show):
+    try:
+      matrix = Matrix([[1, -2], [5, 3], [-3, 1]])
+      matrix.graph_vector()
+      matrix.graph_vector(scale=6)
+    except:
+      self.fail("An error has occurred while graphing 3D vector")
+
+  @patch("src.matrix.plt.show")
+  def test_graph_transform2(self, mock_show):
     try:
       matrix = Matrix([[1, -2], [5, 3]])
-      matrix.graph_2x1()
-      matrix.graph_2x1(column=1, scale=6)
+      matrix.graph_transform2()
+      matrix.graph_transform2(vector=(-1, 2), scale=5)
     except:
-      self.fail("An error has occurred while graphing 2x1")
+      self.fail("An error has occurred while graphing 2D transformation")
 
   @patch("src.matrix.plt.show")
-  def test_graph_2x2(self, mock_show):
-    try:
-      matrix = Matrix([[1, -2], [5, 3]])
-      matrix.graph_2x2()
-      matrix.graph_2x2(vector=(-1, 2), scale=5)
-    except:
-      self.fail("An error has occurred while graphing 2x2")
-
-  @patch("src.matrix.plt.show")
-  def test_graph_3x3(self, mock_show):
+  def test_graph_transform3(self, mock_show):
     try:
       matrix = Matrix([[-1, 2, 2], [4, -1, 5], [3, -4, 5]])
-      matrix.graph_3x3()
-      matrix.graph_3x3(vector=(4, -2, 1), scale=10)
+      matrix.graph_transform3()
+      matrix.graph_transform3(vector=(4, -2, 1), scale=10)
     except:
-      self.fail("An error has occurred while graphing 3x3")
+      self.fail("An error has occurred while graphing 3D transformation")
 
 if __name__ == '__main__':
   unittest.main()

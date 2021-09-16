@@ -1,4 +1,5 @@
 import math
+import cmath
 import matplotlib.pyplot as plt
 from matplotlib.ticker import StrMethodFormatter, FuncFormatter
 import matplotlib.ticker as ticker
@@ -49,6 +50,11 @@ class Plane:
       return 180 + angle
     if quadrant == 4:
       return 360 - angle
+
+  # @staticmethod
+  # def complex_roots(num, root):
+  #   real_root = num ** (1 / root)
+    
 
   @staticmethod
   def graph_rectangular(a=None, b=None, scale=1):

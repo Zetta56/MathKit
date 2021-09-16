@@ -350,9 +350,13 @@ class Matrix:
     ex. |a  b| * |x| => x * |a| + y * |b| => |ax + by|
         |c  d|   |y|        |c|       |d|    |cx + dy|
     """
-    # Uses multiply_scalar if 'other' is an int or float
+    # Multiplies every element in this matrix by 'other' if 'other' is a number
     if isinstance(other, int) or isinstance(other, float):
-      return self.multiply_scalar(other)
+      output = deepcopy(self)
+      for row in range(len(output.data)):
+        for col in range(len(output.data[0])):
+          output.data[row][col] *= other
+      return output
     # Performs matrix multiplication if orders (row and columns) are correct
     elif isinstance(other, Matrix):
       if len(self.data[0]) != len(other.data):
@@ -372,55 +376,35 @@ class Matrix:
   def __rmul__(self, other):
     """Allows the scalar multiplication order: scalar * matrix"""
     if isinstance(other, int) or isinstance(other, float):
-      return self.multiply_scalar(other)
+      return self * other
 
-  def multiply_scalar(self, scalar):
-    """Multiplies each value in matrix with the scalar value"""
-    output = deepcopy(self)
-    for row in range(len(output.data)):
-      for col in range(len(output.data[0])):
-        output.data[row][col] *= scalar
-    return output
-
-  def graph(self, vector=None, column=0, scale=1):
+  def graph_vector(self, col=0, scale=1):
     """
-    Shortcut to access graph2x1, graph2x2, or graph3x3, depending on
-    the current matrix's order (number of rows and columns)
-    """
-    if len(self.data) == 2 and len(self.data[0]) == 1:
-      self.graph_2x1(column=column, scale=scale)
-    elif len(self.data) == 2 and len(self.data[0]) == 2:
-      vector = (1, 1) if vector is None else vector
-      self.graph_2x2(vector=vector, scale=scale)
-    elif len(self.data) == 3 and len(self.data[0]) == 3:
-      vector = (1, 1, 1) if vector is None else vector
-      self.graph_3x3(vector=vector, scale=scale)
-    else:
-      raise ValueError("Matrix is neither a 2x1, 2x2, nor 3x3 matrix")
-
-  def graph_2x1(self, column=0, scale=1):
-    """
-    Graphs the basis vectors of a 2x1 matrix on a 2D plane.
-    For larger matrices, you can specify the matrix column to graph.
+    Graphs the basis vectors of a 2x1 or 3x1 matrix on a plane. For matrices
+    with more than 1 column, you can specify the matrix column to graph.
     """
     if len(self.data) == 2:
       Plane.init_cartesian2(plt, scale)
-      plt.title("2x1 Matrix")
-      # x and y components
-      plt.arrow(0, 0, self.data[0][column], 0, lw=3, head_width=(scale/50), color="g")
-      plt.arrow(0, 0, 0, self.data[1][column], lw=3, head_width=(scale/50), color="b")
-      # Final vector
-      plt.arrow(0, 0, self.data[0][column], self.data[1][column], lw=3, head_width=(scale/50), color="y")
+      plt.title("Matrix Vector")
+      plt.arrow(0, 0, self.data[0][col], self.data[1][col], lw=3, head_width=(scale/50), color="r")
+      plt.text(self.data[0][col], self.data[1][col], f"({self.data[0][col]}, {self.data[1][col]})")
+      plt.show()
+    if len(self.data) == 3:
+      Plane.init_cartesian3(plt, scale)
+      plt.title("Matrix Vector")
+      ax = plt.gca()
+      ax.quiver(0, 0, 0, self.data[0][col], self.data[1][col], self.data[2][col], color="r")
+      ax.text(self.data[0][col], self.data[1][col],  self.data[2][col], f"({self.data[0][col]}, {self.data[1][col]}, {self.data[2][col]})")
       plt.show()
 
-  def graph_2x2(self, vector=(1, 1), scale=1):
+  def graph_transform2(self, vector=(1, 1), scale=1):
     """
     Graphs the basis vectors of a 2x2 matrix, as well as its transformation
     on a given vector.
     """
     Plane.init_cartesian2(plt, scale)
     ax = plt.gca()
-    plt.title("2x2 Matrix")
+    plt.title("Matrix Transformation")
     # Basis vectors
     plt.arrow(0, 0, self.data[0][0], self.data[1][0], head_width=(scale/50), color="g", label="Basis i")
     ax.text(self.data[0][0], self.data[1][0], f"({self.data[0][0]}, {self.data[1][0]})")
@@ -438,14 +422,14 @@ class Matrix:
     ax.legend()
     plt.show()
 
-  def graph_3x3(self, vector=(1, 1, 1), scale=1):
+  def graph_transform3(self, vector=(1, 1, 1), scale=1):
     """
     Graphs the basis vectors of a 3x3 matrix, as well as its transformation
     on a given vector.
     """
     Plane.init_cartesian3(plt, scale)
     ax = plt.gca()
-    plt.title("3x3 Matrix")
+    plt.title("Matrix Transformation")
     # Basis vectors and labels
     plt.quiver(0, 0, 0, self.data[0][0], self.data[1][0], self.data[2][0], color="r", label="Basis i")
     ax.text(self.data[0][0], self.data[1][0], self.data[2][0], f"({self.data[0][0]}, {self.data[1][0]}, {self.data[2][0]})")
