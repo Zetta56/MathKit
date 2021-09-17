@@ -39,7 +39,7 @@ class TestPlane(unittest.TestCase):
     self.assertAlmostEqual(polar[0], 7.81, places=2)
     self.assertAlmostEqual(polar[1], 5.59, places=2)
 
-  @patch("src.matrix.plt.show")
+  @patch("src.plane.plt.show")
   def test_graph_rectangular(self, mock_show):
     try:
       Plane.graph_rectangular(3, 4, scale=5)
@@ -47,7 +47,7 @@ class TestPlane(unittest.TestCase):
     except:
       self.fail("An error has occurred while graphing rectangular")
 
-  @patch("src.matrix.plt.show")
+  @patch("src.plane.plt.show")
   def test_graph_polar(self, mock_show):
     try:
       Plane.graph_polar(3, 10)
@@ -56,21 +56,21 @@ class TestPlane(unittest.TestCase):
     except:
       self.fail("An error has occurred while graphing polar")
 
-  @patch("src.matrix.plt.show")
+  @patch("src.plane.plt.show")
   def test_init_cartesian2(self, mock_show):
     try:
       Plane.init_cartesian2(plt, scale=5)
     except:
       self.fail("An error has occurred while initializing graphs")
 
-  @patch("src.matrix.plt.show")
+  @patch("src.plane.plt.show")
   def test_init_cartesian3(self, mock_show):
     try:
       Plane.init_cartesian3(plt, scale=3)
     except:
       self.fail("An error has occurred while initializing graphs")
 
-  @patch("src.matrix.plt.show")
+  @patch("src.plane.plt.show")
   def test_init_polar(self, mock_show):
     try:
       Plane.init_polar(plt)

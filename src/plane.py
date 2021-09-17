@@ -51,11 +51,6 @@ class Plane:
     if quadrant == 4:
       return 360 - angle
 
-  # @staticmethod
-  # def complex_roots(num, root):
-  #   real_root = num ** (1 / root)
-    
-
   @staticmethod
   def graph_rectangular(a=None, b=None, scale=1):
     """Plots rectangular co-ordinate on a rectangular plane"""

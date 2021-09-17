@@ -1,4 +1,6 @@
 import math
+import random
+import matplotlib.pyplot as plt
 
 class Probability:
   @staticmethod
@@ -29,3 +31,82 @@ class Probability:
       return 0
     else:
       return math.factorial(n) / (math.factorial(r) * math.factorial(n - r))
+  
+  @staticmethod
+  def binomial(n, r, success_chance, r_meaning="exact"):
+    """
+    Finds the probability that a successful outcome happens a specific
+    number of times and that a failing outcome happens the rest of the times
+    in a specific number of trials. Since this only differentiates between
+    successes and failures, the order does not matter.
+
+    Formula: nCr * p^r * q^(n - r)
+    
+    *n=number of trials, r=number of desired outcomes, p=success chance,
+    q=failure chance
+
+    **r_meaning can be 'exact', 'min', or 'max' (ex. to find the chance of
+    rolling a 1 AT MOST 2 times out of 5, call binomial(5, 2, 1/6, 'max'))
+    """
+    # Choose the number of successful outcomes to consider, depending on 
+    # the value of 'r_meaning'
+    if r_meaning == "exact":
+      success_range = range(r, r + 1)
+    elif r_meaning == "min":
+      success_range = range(r, n + 1)
+    elif r_meaning == "max":
+      success_range = range(0, r + 1)
+
+    # Add the probabilities of all acceptable numbers of successes
+    total = 0
+    for num_successes in success_range:
+      p = success_chance ** num_successes
+      q = (1 - success_chance) ** (n - num_successes)
+      total += Probability.combinations(n, num_successes) * p * q
+    return total
+
+  @staticmethod
+  def graph_binomial(trials, n, r, success_chance, r_meaning="exact", deley=0.5):
+    # Set up bar graph
+    fig, ax = plt.subplots()
+    ax.set_ylim(0, 1)
+    # Graph initial x and y values on bar graph
+    successful_trials, failed_trials = 0, 0
+    bars = plt.bar(["Success", "Failure"], [successful_trials, failed_trials])
+    # Graph line representing average probability
+    average = Probability.binomial(n, r, success_chance, r_meaning)
+    plt.axhline(y=average, linewidth=1, color='k')
+    plt.text(0, average, f"Average Success: {average:.3f}")
+    
+    # Start filling bar graph with trial successes/failures
+    for trial in range(trials):
+      # Decide whether trial is a success using r and random numbers
+      successful_outcomes, failed_outcomes = 0, 0
+      for element in range(n):
+        if random.uniform(0, 1) < success_chance:
+          successful_outcomes += 1
+        else:
+          failed_outcomes += 1
+      # Add trial success/failure to above counters
+      if (r_meaning == "exact" and successful_outcomes == r or
+          r_meaning == "min" and successful_outcomes >= r or
+          r_meaning == "max" and successful_outcomes <= r):
+        successful_trials += 1
+      else:
+        failed_trials += 1
+      # Update the rendered graph by setting the bar heights and redrawing
+      bars[0].set_height(successful_trials / (successful_trials + failed_trials))
+      bars[1].set_height(failed_trials  / (successful_trials + failed_trials))
+      fig.canvas.draw()
+      # Pause for 0.5 seconds between trials
+      plt.pause(deley)
+    plt.show()
+
+  # @staticmethod
+  # def graph_random(labels, weights, trials):
+  #   counts = [0 for weight in weights]
+  #   for trial in trials:
+  #     sum(weights)
+  #     counts[] += 1
+  #   plt.bar(labels, [success_count, fail_count])
+  #   plt.show()
