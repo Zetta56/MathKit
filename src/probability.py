@@ -66,13 +66,14 @@ class Probability:
     return total
 
   @staticmethod
-  def graph_binomial(trials, n, r, success_chance, r_meaning="exact", deley=0.5):
+  def graph_binomial(n, r, success_chance, r_meaning="exact", trials=10, deley=0.5):
     # Set up bar graph
     fig, ax = plt.subplots()
     ax.set_ylim(0, 1)
     # Graph initial x and y values on bar graph
     successful_trials, failed_trials = 0, 0
-    bars = plt.bar(["Success", "Failure"], [successful_trials, failed_trials])
+    bar_label = ax.text(0, 0, "0")
+    bars = plt.bar(["Success"], [successful_trials])
     # Graph line representing average probability
     average = Probability.binomial(n, r, success_chance, r_meaning)
     plt.axhline(y=average, linewidth=1, color='k')
@@ -95,18 +96,11 @@ class Probability:
       else:
         failed_trials += 1
       # Update the rendered graph by setting the bar heights and redrawing
-      bars[0].set_height(successful_trials / (successful_trials + failed_trials))
-      bars[1].set_height(failed_trials  / (successful_trials + failed_trials))
+      current_success = successful_trials / (successful_trials + failed_trials)
+      bars[0].set_height(current_success)
+      bar_label.set_position((0, current_success / 2))
+      bar_label.set_text(f"{current_success:.3f}")
       fig.canvas.draw()
       # Pause for 0.5 seconds between trials
       plt.pause(deley)
     plt.show()
-
-  # @staticmethod
-  # def graph_random(labels, weights, trials):
-  #   counts = [0 for weight in weights]
-  #   for trial in trials:
-  #     sum(weights)
-  #     counts[] += 1
-  #   plt.bar(labels, [success_count, fail_count])
-  #   plt.show()

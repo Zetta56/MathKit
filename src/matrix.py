@@ -405,6 +405,15 @@ class Matrix:
     Plane.init_cartesian2(plt, scale)
     ax = plt.gca()
     plt.title("Matrix Transformation")
+    # Determinant Area
+    # Create parallelogram using: origin, basis vectors, and a point parallel to both basis vectors
+    points = [(0, 0), (self.data[0][0], self.data[1][0]), (self.data[0][0] + self.data[0][1],
+      self.data[1][0] + self.data[1][1]), (self.data[0][1], self.data[1][1]), (0, 0)]
+    ax.add_patch(plt.Polygon(points))
+    # Find center of parallelogram by getting average of x (and y) min and max
+    sorted_x = sorted([0, self.data[0][0], self.data[0][1], self.data[0][0] + self.data[0][1]])
+    sorted_y = sorted([0, self.data[1][0], self.data[1][1], self.data[1][0] + self.data[1][1]])
+    ax.text((sorted_x[3] - sorted_x[0]) / 2, (sorted_y[3] - sorted_y[0]) / 2, f"{self.determinant()}")
     # Basis vectors
     plt.arrow(0, 0, self.data[0][0], self.data[1][0], head_width=(scale/50), color="g", label="Basis i")
     ax.text(self.data[0][0], self.data[1][0], f"({self.data[0][0]}, {self.data[1][0]})")
@@ -418,6 +427,7 @@ class Matrix:
     plt.arrow(0, 0, transformed.data[0][0], transformed.data[1][0], head_width=(scale/50),
       color="tab:orange", label="Post-transform")
     ax.text(transformed.data[0][0], transformed.data[1][0], f"({transformed.data[0][0]}, {transformed.data[1][0]})")
+    
     # Display legend and graph
     ax.legend()
     plt.show()

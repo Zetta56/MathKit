@@ -1,7 +1,6 @@
 import math
-import cmath
+import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.ticker import StrMethodFormatter, FuncFormatter
 import matplotlib.ticker as ticker
 
 class Plane:
@@ -77,6 +76,19 @@ class Plane:
     plt.show()
 
   @staticmethod
+  def graph_function(function, scale=1):
+    """
+    Graphs a specified function on a 2D cartesian plane
+
+    *Function argument must be a lambda (ex. `lambda x: x**2`)
+    """
+    Plane.init_cartesian2(plt, scale)
+    x = np.linspace(-scale, scale, 50)
+    y = function(x)
+    plt.plot(x, y)
+    plt.show()
+
+  @staticmethod
   def init_cartesian2(plt, scale, x_axis_label='x', y_axis_label='y'):
     """Creates a formatted 2D cartesian plane."""
     # Setup
@@ -100,11 +112,11 @@ class Plane:
     ax.plot(0, 0, "vk", transform=ax.get_xaxis_transform(), clip_on=False)
     # Format tick labels to hide the origin and round to 2 decimal places
     hide_origin = lambda x, pos: "" if x == 0 else x
-    ax.xaxis.set_major_formatter(FuncFormatter(hide_origin))
-    ax.yaxis.set_major_formatter(FuncFormatter(hide_origin))
+    ax.xaxis.set_major_formatter(ticker.FuncFormatter(hide_origin))
+    ax.yaxis.set_major_formatter(ticker.FuncFormatter(hide_origin))
     if type(scale) == float:
-      ax.xaxis.set_major_formatter(StrMethodFormatter('{x:.2f}'))
-      ax.yaxis.set_major_formatter(StrMethodFormatter('{x:.2f}'))
+      ax.xaxis.set_major_formatter(ticker.StrMethodFormatter('{x:.2f}'))
+      ax.yaxis.set_major_formatter(ticker.StrMethodFormatter('{x:.2f}'))
     # Add x and y labels to axes (labelpad moves labels relative to their normal positions)
     ax.set_xlabel(x_axis_label, labelpad=-30, x=1)
     ax.set_ylabel(y_axis_label, labelpad=-33, y=0.98, rotation=0)

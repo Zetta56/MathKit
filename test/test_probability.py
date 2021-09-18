@@ -28,7 +28,7 @@ class TestProbability(unittest.TestCase):
   @patch("src.probability.plt.pause")
   def test_graph_binomial(self, mock_show, mock_pause):
     try:
-      Probability.graph_binomial(10, 5, 3, 4/7, r_meaning="min")
+      Probability.graph_binomial(5, 3, 4/7, r_meaning="min")
     except:
       self.fail("An error has occurred while graphing binomial probability")
 
