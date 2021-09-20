@@ -3,6 +3,9 @@ import random
 import matplotlib.pyplot as plt
 
 class Probability:
+  """
+  This class contains solvers and graphers related to probability.
+  """
   @staticmethod
   def permutations(n, r):
     """

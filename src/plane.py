@@ -4,6 +4,11 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
 class Plane:
+  """
+  This class handles graph initialization, general graphing, and plane
+  conversions. Some supported planes include rectangular, polar, 2D cartesian,
+  and 3D cartesian planes.
+  """
   @staticmethod
   def to_rectangular(r, theta, isDegrees=True):
     """

@@ -1,6 +1,5 @@
 from copy import deepcopy
-
-import math
+import re
 from src.plane import Plane
 import matplotlib.pyplot as plt
 
@@ -49,8 +48,10 @@ class Matrix:
     for row in self.data:
       output += "|"
       for element in row:
+        # Remove negative sign from -0 if it element is ever equal to -0
+        element = element if element != 0 else abs(element)
         # Left aligned in 6-wide space, rounded to 4 decimal places, dropped trailing 0s
-        output += f"{element:^8.4g}"
+        output += f"{(element):^8.4g}"
       output += "|\n"
     return output
 
@@ -191,6 +192,7 @@ class Matrix:
             multiple = [ref.data[row][entry_col] * element for element in ref.data[entry_row]]
             for col in range(len(ref.data[row])):
               ref.data[row][col] -= multiple[col]
+              
 
           # Setup for the next entry column
           previous_row += 1
@@ -240,8 +242,8 @@ class Matrix:
     the hypoteneuse vector, or the length of the adjacent vector when projected
     and scaled onto the hypoteneuse vector.
 
-    Ex. |a|.|c| = ac+bd     |a  b|*|c| = ac+bd
-        |b| |d|                    |d|
+    Ex. |a|.|c| = ac+bd
+        |b| |d|
 
     *col is the column in each matrix to extract a vector from
     """
@@ -286,6 +288,8 @@ class Matrix:
 
   # def eigenvalues(self):
   #   """
+  #   ** Work in Progress **
+  #
   #   Finds the eigenvectors of the current matrix, or the vectors that are only
   #   scaled (not rotated at all) by a certain scale factor (the eigenvalue)
   #   when performing this matrix transformation.
