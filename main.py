@@ -2,6 +2,7 @@ from src.triangle import Triangle
 from src.matrix import Matrix
 from src.plane import Plane
 from src.probability import Probability
+from src.base import Base
 import math
 
 # Sample Usage:
@@ -32,5 +33,6 @@ import math
 # Probability.graph_binomial(5, 3, 4/7, r_meaning="min", trials=20)
 # Plane.graph_function(lambda x: x ** 3)
 
-matrix = Matrix([[5, 2, 5, -3], [6, 1, 0, 7], [-4, 3, -1, 3]])
-print(matrix.to_reduced_row_echelon())
+# matrix = Matrix([[5, 2, 5, -3], [6, 1, 0, 7], [-4, 3, -1, 3]])
+# print(matrix.to_reduced_row_echelon())
+Base.convert(53, 8, 5)
