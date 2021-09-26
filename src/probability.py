@@ -69,7 +69,7 @@ class Probability:
     return total
 
   @staticmethod
-  def graph_binomial(n, r, success_chance, r_meaning="exact", trials=10, deley=0.5):
+  def graph_binomial(n, r, success_chance, r_meaning="exact", trials=10, delay=0.5):
     # Set up bar graph
     fig, ax = plt.subplots()
     ax.set_ylim(0, 1)
@@ -105,5 +105,5 @@ class Probability:
       bar_label.set_text(f"{current_success:.3f}")
       fig.canvas.draw()
       # Pause for 0.5 seconds between trials
-      plt.pause(deley)
+      plt.pause(delay)
     plt.show()

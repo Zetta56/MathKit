@@ -44,16 +44,20 @@ class Plane:
     return (r, theta)
 
   @staticmethod
-  def to_quadrant(angle, quadrant):
+  def to_quadrant(ref_angle, quadrant, isDegrees=True):
     """Converts a reference angle to an angle in a specified quadrant"""
-    if quadrant == 1:
-      return angle
-    if quadrant == 2:
-      return 180 - angle
-    if quadrant == 3:
-      return 180 + angle
-    if quadrant == 4:
-      return 360 - angle
+    # Find the full angle of a circle in either degrees or radians
+    full_angle = 360 if isDegrees else (2 * math.pi)
+    # Check that the input angle is a reference angle (between 0 and 90 degrees)
+    if 0 <= ref_angle < 90:
+      if quadrant == 1:
+        return ref_angle
+      if quadrant == 2:
+        return (full_angle / 2) - ref_angle
+      if quadrant == 3:
+        return (full_angle / 2) + ref_angle
+      if quadrant == 4:
+        return full_angle - ref_angle
 
   @staticmethod
   def graph_rectangular(a=None, b=None, scale=1):

@@ -7,13 +7,14 @@ A set of math problem solvers and graphers used to better understand mathematica
 2. (Optional) Run `python -m venv <virtual_env_name>` to create a virtual environment that isolates your cloned project's dependencies from the rest of your system
 3. (Optional) Run `.\<virtual_env_name>\Scripts\activate` to activate your virtual environment
 4. Run `pip install -r requirements.txt` to install necessary dependencies
+5. You can call now math solvers and graphers in the `main.py` file and then run them with `python .\main.py`.
 
-## Usage
-After fully installing this project, you can call now math solvers and graphers in the `main.py` file and then run them with `python .\main.py`.
-
-For more info about specific solvers/graphers, check out the following documentation:
+## Table of Contents
 - [Triangle](/docs/markdown/triangle.md)
 - [Matrix](/docs/markdown/matrix.md)
+- [Plane](/docs/markdown/plane.md)
+- [Probability](/docs/markdown/probability.md)
+- [Base](/docs/markdown/base.md)
 
 ## Testing
 

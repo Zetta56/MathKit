@@ -22,4 +22,4 @@ triangle = Triangle(a=4, b=6, B=80)
 triangle.graph()
 ```
 
-![Example](/docs/images/triangle.JPG)
+![Triangle](/docs/images/triangle.JPG)

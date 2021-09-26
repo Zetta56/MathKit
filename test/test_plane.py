@@ -1,6 +1,7 @@
-import matplotlib.pyplot as plt
+import math
 import unittest
 from unittest.mock import patch
+import matplotlib.pyplot as plt
 from src.plane import Plane
 
 class TestPlane(unittest.TestCase):
@@ -38,6 +39,21 @@ class TestPlane(unittest.TestCase):
     polar = Plane.to_polar(6, -5, isDegrees=False)
     self.assertAlmostEqual(polar[0], 7.81, places=2)
     self.assertAlmostEqual(polar[1], 5.59, places=2)
+
+  def test_to_quadrant_degrees(self):
+    angle = Plane.to_quadrant(64, 3)
+    self.assertAlmostEqual(angle, 244, places=2)
+
+  def test_to_quadrant_radians(self):
+    angle = Plane.to_quadrant(math.pi / 6, 2, isDegrees=False)
+    self.assertAlmostEqual(angle, (5 * math.pi) / 6, places=2)
+
+  @patch("src.plane.plt.show")
+  def test_graph_function(self, mock_show):
+    try:
+      Plane.graph_function(lambda x: x**2)
+    except:
+      self.fail("An error has occurred while graphing function")
 
   @patch("src.plane.plt.show")
   def test_graph_rectangular(self, mock_show):
